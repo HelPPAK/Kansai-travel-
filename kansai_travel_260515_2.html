@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>간사이 여행 대시보드</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f3;--bg3:#efefec;
+  --text:#1a1a1a;--text2:#6b6b67;--text3:#9d9d99;
+  --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.2);
+  --accent:#1D9E75;--accent2:#0F6E56;
+  --radius:12px;--radius-sm:8px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+    --text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;
+    --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
+  }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg3);color:var(--text);font-size:15px;min-height:100vh;}
+.app{max-width:520px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative;}
+
+/* NAV */
+.nav{display:flex;gap:0;padding:8px 10px;background:var(--bg);position:sticky;top:0;z-index:20;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nb{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;font-size:11.5px;cursor:pointer;color:var(--text2);white-space:nowrap;transition:all 0.15s;margin-right:4px;}
+.nb.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.nb svg{width:12px;height:12px;flex-shrink:0;pointer-events:none;}
+
+/* SCREENS */
+.scr{display:none;padding:16px 14px 40px;}
+.scr.on{display:block;}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;}
+.card2{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;}
+.sec{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;}
+.lbl{font-size:12px;color:var(--text2);margin-bottom:4px;display:block;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 9px;border-radius:10px;font-weight:500;}
+.b-blue{background:#dbeafe;color:#1e40af;}
+.b-green{background:#dcfce7;color:#166534;}
+.b-amber{background:#fef3c7;color:#92400e;}
+.b-pink{background:#fce7f3;color:#9d174d;}
+.b-teal{background:#ccfbf1;color:#115e59;}
+.b-purple{background:#ede9fe;color:#4c1d95;}
+.b-red{background:#fee2e2;color:#991b1b;}
+@media(prefers-color-scheme:dark){
+  .b-blue{background:#1e3a5f;color:#93c5fd;}
+  .b-green{background:#14532d;color:#86efac;}
+  .b-amber{background:#451a03;color:#fcd34d;}
+  .b-pink{background:#500724;color:#f9a8d4;}
+  .b-teal{background:#042f2e;color:#5eead4;}
+  .b-purple{background:#2e1065;color:#c4b5fd;}
+}
+
+/* PAX CHIPS */
+.pax-heli{background:#ccfbf1;color:#115e59;display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:500;}
+.pax-hat{background:#ede9fe;color:#4c1d95;display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:500;}
+@media(prefers-color-scheme:dark){
+  .pax-heli{background:#042f2e;color:#5eead4;}
+  .pax-hat{background:#2e1065;color:#c4b5fd;}
+}
+.pay-card{background:#dbeafe;color:#1e40af;font-size:11px;padding:1px 7px;border-radius:6px;}
+.pay-cash{background:#fef3c7;color:#92400e;font-size:11px;padding:1px 7px;border-radius:6px;}
+.pay-heli{background:#ccfbf1;color:#115e59;font-size:11px;padding:1px 7px;border-radius:6px;}
+.pay-hat{background:#ede9fe;color:#4c1d95;font-size:11px;padding:1px 7px;border-radius:6px;}
+@media(prefers-color-scheme:dark){
+  .pay-card{background:#1e3a5f;color:#93c5fd;}
+  .pay-heli{background:#042f2e;color:#5eead4;}
+  .pay-hat{background:#2e1065;color:#c4b5fd;}
+}
+
+/* FORM */
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:56px;line-height:1.5;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.form-group{margin-bottom:10px;}
+.btn-add{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;cursor:pointer;font-weight:500;margin-top:6px;}
+.btn-add:active{background:var(--accent2);}
+.btn-sm{padding:5px 11px;font-size:12px;border:1px solid var(--border2);background:transparent;border-radius:6px;cursor:pointer;color:var(--text2);}
+.btn-sm:active{background:var(--bg2);}
+.btn-del{padding:5px 10px;font-size:12px;border:1px solid #fca5a5;background:transparent;border-radius:6px;cursor:pointer;color:#dc2626;}
+.divider{height:1px;background:var(--border);margin:10px 0;}
+
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.stat{background:var(--bg2);border-radius:var(--radius-sm);padding:13px;}
+.stat-lbl{font-size:11px;color:var(--text2);margin-bottom:3px;}
+.stat-val{font-size:20px;font-weight:600;color:var(--text);}
+.stat.accent{background:#ccfbf1;} .stat.accent .stat-val{color:#0f766e;}
+.stat.warn{background:#fee2e2;} .stat.warn .stat-val{color:#b91c1c;}
+@media(prefers-color-scheme:dark){
+  .stat.accent{background:#042f2e;} .stat.accent .stat-val{color:#5eead4;}
+  .stat.warn{background:#450a0a;} .stat.warn .stat-val{color:#fca5a5;}
+}
+
+/* FLIGHT */
+.flight-card{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.flight-head{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.flight-body{padding:14px 16px;}
+.flight-route{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+.f-city{text-align:center;min-width:64px;}
+.f-code{font-size:20px;font-weight:700;color:var(--text);}
+.f-name{font-size:10px;color:var(--text2);margin-top:1px;}
+.f-time{font-size:15px;font-weight:600;color:var(--text);margin-top:3px;}
+.f-line{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.f-dur{font-size:10px;color:var(--text2);}
+.f-dash{width:100%;height:1px;background:var(--border2);position:relative;}
+.f-dash::after{content:'';position:absolute;right:-3px;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+.f-meta{font-size:10px;color:var(--text3);}
+
+/* HOTEL */
+.hotel-card{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.hotel-stripe{height:4px;}
+.hotel-body{padding:14px 16px;}
+.hotel-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.hotel-dates{font-size:12px;color:var(--text2);margin-bottom:8px;}
+.hotel-info-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12px;color:var(--text2);}
+.hotel-info-row svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--text3);}
+.map-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border2);border-radius:8px;background:transparent;font-size:12px;color:var(--text2);cursor:pointer;text-decoration:none;margin-top:4px;}
+.map-btn:hover{background:var(--bg2);}
+
+/* ROUTE */
+.route-card{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.route-head{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.route-date{font-size:11px;color:var(--text2);margin-bottom:2px;}
+.route-title{font-size:13px;font-weight:600;color:var(--text);}
+.route-body{padding:12px 16px;}
+.route-detail{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:8px;}
+.route-cost{font-size:13px;font-weight:600;color:var(--accent2);margin-bottom:8px;}
+
+/* TIMELINE */
+.tl-wrap{padding-left:36px;position:relative;}
+.tl-wrap::before{content:'';position:absolute;left:14px;top:10px;bottom:10px;width:1.5px;background:var(--border2);}
+.tl-item{position:relative;margin-bottom:16px;cursor:grab;transition:opacity 0.2s;}
+.tl-item.dragging{opacity:0.4;cursor:grabbing;}
+.tl-item.drag-over{border-top:2px solid var(--accent);margin-top:-2px;}
+.tl-item:active{cursor:grabbing;}
+.tl-icon{position:absolute;left:-36px;top:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid var(--bg);flex-shrink:0;}
+.tl-icon.cat-move{background:#dbeafe;}
+.tl-icon.cat-sight{background:#ccfbf1;}
+.tl-icon.cat-food{background:#fef3c7;}
+.tl-icon.cat-hotel{background:#fce7f3;}
+.tl-icon.cat-shop{background:#ede9fe;}
+.tl-icon.cat-air{background:#dcfce7;}
+@media(prefers-color-scheme:dark){
+  .tl-icon.cat-move{background:#1e3a5f;}
+  .tl-icon.cat-sight{background:#042f2e;}
+  .tl-icon.cat-food{background:#451a03;}
+  .tl-icon.cat-hotel{background:#500724;}
+  .tl-icon.cat-shop{background:#2e1065;}
+  .tl-icon.cat-air{background:#14532d;}
+}
+.tl-time{font-size:11px;color:var(--text3);}
+.tl-title{font-size:13px;font-weight:600;color:var(--text);margin-top:1px;}
+.tl-memo{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.6;}
+.tl-actions{margin-top:6px;display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.tl-edit-area{display:none;margin-top:8px;background:var(--bg2);border-radius:var(--radius-sm);padding:12px;}
+.tl-item.editing .tl-edit-area{display:block;}
+.tl-item.editing .tl-view{display:none;}
+.btn-order{padding:3px 7px;font-size:13px;border:1px solid var(--border2);background:transparent;border-radius:6px;cursor:pointer;color:var(--text2);line-height:1;}
+.btn-order:active{background:var(--bg2);}
+
+/* DAY TABS */
+.day-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:10px;margin-bottom:4px;}
+.day-tabs::-webkit-scrollbar{display:none;}
+.dt{flex-shrink:0;padding:6px 14px;border-radius:16px;border:1px solid var(--border2);background:transparent;font-size:12px;cursor:pointer;color:var(--text2);font-weight:500;}
+.dt.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.day-content{display:none;}
+.day-content.on{display:block;}
+.day-note{font-size:12px;color:var(--text2);margin-bottom:12px;padding:7px 12px;background:var(--bg2);border-radius:8px;}
+
+/* BUDGET */
+.budget-bar{height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:8px 0;}
+.bfill{height:100%;border-radius:5px;background:var(--accent);transition:width 0.5s;}
+.bfill.over{background:#dc2626;}
+.exp-row{display:flex;align-items:flex-start;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
+.exp-row:last-child{border-bottom:none;}
+.exp-left{flex:1;min-width:0;}
+.exp-name{font-size:13px;color:var(--text);font-weight:500;}
+.exp-meta{font-size:11px;color:var(--text2);margin-top:3px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.exp-right{text-align:right;flex-shrink:0;margin-left:10px;}
+.exp-amt{font-size:14px;font-weight:600;color:var(--text);}
+.exp-chips{display:flex;gap:3px;margin-top:3px;justify-content:flex-end;flex-wrap:wrap;}
+.exp-sub{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* HERO */
+.hero{background:var(--accent);border-radius:var(--radius);padding:18px;margin-bottom:12px;color:#fff;}
+.hero-title{font-size:20px;font-weight:700;margin-bottom:3px;}
+.hero-sub{font-size:13px;opacity:0.85;}
+.hero-tags{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+.hero-tag{background:rgba(255,255,255,0.2);color:#fff;font-size:11px;padding:3px 10px;border-radius:10px;}
+.hero-pax{display:flex;gap:8px;margin-top:10px;}
+.hero-pchip{background:rgba(255,255,255,0.25);color:#fff;font-size:12px;padding:3px 10px;border-radius:8px;font-weight:500;}
+
+/* CONFIRM CHIP */
+.confirm-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text);letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav class="nav">
+  <button class="nb on" onclick="showTab('overview',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>개요
+  </button>
+  <button class="nb" onclick="showTab('flights',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5A2 2 0 0 0 17 4l-3.5 3.5L5 5.8a1 1 0 0 0-.9 1.1l.3 1.3A1 1 0 0 0 5.3 9L9 10l-4 4-1.8-.5a.5.5 0 0 0-.5.8L5 17l2.5 2.8a.5.5 0 0 0 .8-.5L7.8 17.5 12 13.5l1 3.7a1 1 0 0 0 .9.8l1.3.3a1 1 0 0 0 1.1-.9l.5-3.2z"/></svg>항공·호텔
+  </button>
+  <button class="nb" onclick="showTab('routes',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>이동경로
+  </button>
+  <button class="nb" onclick="showTab('schedule',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>일정
+  </button>
+  <button class="nb" onclick="showTab('budget',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>지출 관리
+  </button>
+  <button class="nb" onclick="showTab('tips',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>꿀팁
+  </button>
+  <button class="nb" onclick="showTab('todo',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>투두
+  </button>
+</nav>
+
+<!-- OVERVIEW -->
+<div id="tab-overview" class="scr on">
+  <div class="hero">
+    <div class="hero-title">🗾 간사이 여행</div>
+    <div class="hero-sub">2026년 5월 31일(일) ~ 6월 3일(수) · 4일 3박</div>
+    <div class="hero-tags">
+      <span class="hero-tag">✈ ZE611 IN</span>
+      <span class="hero-tag">🏨 교토 2박</span>
+      <span class="hero-tag">🏨 오사카 1박</span>
+      <span class="hero-tag">✈ ZE614 OUT</span>
+    </div>
+    <div class="hero-pax">
+      <span class="hero-pchip">👩‍🦰 헬리</span>
+      <span class="hero-pchip">👩 핫은</span>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+
+    <!-- 사전 지출 카드 -->
+    <div style="border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:12px 8px 10px;border-bottom:1px solid var(--border);text-align:center;">
+        <div style="font-size:18px;margin-bottom:4px;">🗂️</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);">사전 지출</div>
+      </div>
+      <div style="padding:8px 10px;display:flex;flex-direction:column;" id="ov-pre-lines">
+        <div style="font-size:12px;color:var(--text3);text-align:center;padding:8px 0;">-</div>
+      </div>
+    </div>
+
+    <!-- 현지 지출 카드 -->
+    <div style="border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:12px 8px 10px;border-bottom:1px solid var(--border);text-align:center;">
+        <div style="font-size:18px;margin-bottom:4px;">🗾</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);">현지 지출</div>
+      </div>
+      <div style="padding:8px 10px;display:flex;flex-direction:column;" id="ov-local-lines">
+        <div style="font-size:12px;color:var(--text3);text-align:center;padding:8px 0;">-</div>
+      </div>
+      <div style="padding:0 10px 10px;font-size:10px;color:var(--text3);text-align:center;" id="ov-local-sub">예산 미설정</div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="sec">이동 흐름</div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;">
+      <div style="text-align:center;"><div style="color:var(--text2);">5/31 09:15</div><div style="font-weight:600;">인천 ICN</div></div>
+      <span style="color:var(--accent);font-size:16px;">→</span>
+      <div style="text-align:center;"><div style="color:var(--text2);">ZE611</div><div style="font-weight:600;">간사이 KIX</div></div>
+      <span style="color:var(--accent);font-size:16px;">→</span>
+      <div style="text-align:center;"><div style="color:var(--text2);">하루카</div><div style="font-weight:600;">교토</div></div>
+      <span style="color:var(--accent);font-size:16px;">→</span>
+      <div style="text-align:center;"><div style="color:var(--text2);">6/2 한큐</div><div style="font-weight:600;">오사카</div></div>
+      <span style="color:var(--accent);font-size:16px;">→</span>
+      <div style="text-align:center;"><div style="color:var(--text2);">6/3 18:00</div><div style="font-weight:600;">인천 ICN</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec">예약 현황</div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);">✈️ 항공권 왕복 2인</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px;">ZE611 · ZE614 · 예약번호 R6YTPP</div>
+        <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;">
+          <span class="badge b-green" style="font-size:10px;padding:1px 7px;">확정</span>
+          <span class="pay-heli">헬리</span>
+          <span class="pay-card">현대카드</span>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);text-align:right;white-space:nowrap;margin-left:8px;">₩583,600</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);">🏨 컴포트 인 교토 시조카라스마</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px;">5/31 체크인 · 6/2 체크아웃 · 2박 · 확인번호 1725648620</div>
+        <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;">
+          <span class="badge b-green" style="font-size:10px;padding:1px 7px;">확정</span>
+          <span class="pay-heli">헬리</span>
+          <span class="pay-card">아고다</span>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);text-align:right;white-space:nowrap;margin-left:8px;">$128.96</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);">🏨 APA 난바 에키마에 타워</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px;">6/2 체크인 · 6/3 체크아웃 · 1박 · 확인번호 1726708148</div>
+        <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;">
+          <span class="badge b-green" style="font-size:10px;padding:1px 7px;">확정</span>
+          <span class="pay-heli">헬리</span>
+          <span class="pay-card">아고다</span>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);text-align:right;white-space:nowrap;margin-left:8px;">¥11,233</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FLIGHTS -->
+<div id="tab-flights" class="scr">
+  <div class="sec">✈️ 항공권</div>
+  <div class="card2" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div style="font-size:12px;color:var(--text2);">예약번호</div>
+    <div class="confirm-chip">R6YTPP</div>
+  </div>
+
+  <div class="flight-card">
+    <div class="flight-head">
+      <span class="badge b-green">가는 편</span>
+      <span style="font-size:12px;color:var(--text2);">2026.05.31 (일)</span>
+    </div>
+    <div class="flight-body">
+      <div class="flight-route">
+        <div class="f-city">
+          <div class="f-code">ICN</div>
+          <div class="f-name">서울/인천 T1</div>
+          <div class="f-time">09:15</div>
+        </div>
+        <div class="f-line">
+          <div class="f-dur">약 1시간 55분</div>
+          <div class="f-dash"></div>
+          <div class="f-meta">ZE 611 · B738</div>
+        </div>
+        <div class="f-city" style="text-align:right;">
+          <div class="f-code">KIX</div>
+          <div class="f-name">오사카/간사이 T1</div>
+          <div class="f-time">11:10</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pax-heli">👩‍🦰 헬리</span>
+        <span class="pax-hat">👩 핫은</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flight-card">
+    <div class="flight-head">
+      <span class="badge b-pink">오는 편</span>
+      <span style="font-size:12px;color:var(--text2);">2026.06.03 (수)</span>
+    </div>
+    <div class="flight-body">
+      <div class="flight-route">
+        <div class="f-city">
+          <div class="f-code">KIX</div>
+          <div class="f-name">오사카/간사이 T1</div>
+          <div class="f-time">18:00</div>
+        </div>
+        <div class="f-line">
+          <div class="f-dur">약 1시간 55분</div>
+          <div class="f-dash"></div>
+          <div class="f-meta">ZE 614 · B738</div>
+        </div>
+        <div class="f-city" style="text-align:right;">
+          <div class="f-code">ICN</div>
+          <div class="f-name">서울/인천 T1</div>
+          <div class="f-time">19:55</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pax-heli">👩‍🦰 헬리</span>
+        <span class="pax-hat">👩 핫은</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:12px;color:var(--text2);">항공권 결제 · 2인 왕복 · 특가운임</div>
+        <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;">
+          <span class="pay-card">현대카드</span>
+          <span class="pay-heli">헬리</span>
+        </div>
+      </div>
+      <div style="font-size:20px;font-weight:700;color:var(--accent);">₩583,600</div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:8px;">🏨 호텔</div>
+
+
+  <div class="hotel-card">
+    <div class="hotel-stripe" style="background:var(--accent);"></div>
+    <div class="hotel-body">
+      <div class="hotel-name">Comfort Inn Kyoto Shijokarasuma ★★★★</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">コンフォートイン 京都四条烏丸</div>
+      <div class="hotel-dates">5월 31일(일) 15:00 체크인 · 6월 2일(화) 체크아웃 · 2박</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+        <span class="badge b-blue">교토 시조·카라스마</span>
+        <span class="pax-heli">헬리</span><span class="pax-hat">핫은</span>
+      </div>
+      <div class="hotel-info-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>284-1, Tenjinyama-cho, 교토, 일본, 604-8221</span>
+
+      </div>
+      <div class="hotel-info-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>예약 확인 번호 <strong>1725648620</strong></span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6;">지하철 가라스마선 시조역 도보 5분. 한큐 가라스마역 앞 — 이동 접근성 우수.</div>
+
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px;">결제 정보</div>
+      <div style="background:var(--bg2);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);">객실 1개 × 2박</span><span>USD 119.78</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);">세금 및 봉사료</span><span>USD 11.98</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:#16a34a;">아고다 할인</span><span style="color:#16a34a;">-USD 2.80</span></div>
+        <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;font-weight:600;"><span>현재 요금</span><span style="color:#dc2626;">USD 128.96</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">자동 결제일: 2026년 5월 28일 (KRW 환산 청구)</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
+        <span style="font-size:12px;color:var(--text2);">결제 예정:</span>
+        <span class="pay-card">현대카드</span>
+        <span class="pay-heli">헬리</span>
+      </div>
+      <a class="map-btn" href="https://www.google.com/maps/search/284-1+Tenjinyama-cho+Kyoto+604-8221" target="_blank">🗺 구글맵에서 보기</a>
+    </div>
+  </div>
+
+  <div class="hotel-card">
+    <div class="hotel-stripe" style="background:#3b82f6;"></div>
+    <div class="hotel-body">
+      <div class="hotel-name">APA Hotel &amp; Resort Osaka Namba Ekimae Tower</div>
+      <div class="hotel-dates">6월 2일(화) 15:00 체크인 · 6월 3일(수) 체크아웃 · 1박</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+        <span class="badge b-teal">오사카 난바</span>
+        <span class="pax-heli">헬리</span><span class="pax-hat">핫은</span>
+      </div>
+      <div class="hotel-info-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>1-2-13 Minatomachi, Naniwa-ku, Osaka-shi · 556-0017</span>
+      </div>
+      <div class="hotel-info-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 4 5.18 2 2 0 0 1 5.91 3h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L10 10.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 24 17z"/></svg>
+        <span>+81 570-010-711</span>
+      </div>
+      <div class="hotel-info-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>예약 확인 번호 <strong>1726708148</strong></span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6;">난바역(미도스지선·난카이선) 도보 2~5분. 난카이 난바역까지 도보 10분 — 공항 접근 최적.</div>
+
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px;">결제 정보</div>
+      <div style="background:var(--bg2);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);">객실 1개 × 1박</span><span>¥ 9,585</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);">세금 및 봉사료</span><span>¥ 2,539</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:#16a34a;">프로모션 할인 9.3%</span><span style="color:#16a34a;">-¥ 891</span></div>
+        <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;font-weight:600;"><span>현재 요금</span><span style="color:#dc2626;">¥ 11,233</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">자동 결제일: 2026년 5월 30일 (KRW 환산 청구)</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
+        <span style="font-size:12px;color:var(--text2);">결제 예정:</span>
+        <span class="pay-card">현대카드</span>
+        <span class="pay-heli">헬리</span>
+      </div>
+      <a class="map-btn" href="https://www.google.com/maps/search/1-2-13+Minatomachi+Naniwa-ku+Osaka" target="_blank">🗺 구글맵에서 보기</a>
+    </div>
+  </div>
+</div><!-- tab-flights -->
+
+<!-- ROUTES -->
+<div id="tab-routes" class="scr">
+
+  <!-- 5/31 IN -->
+  <div style="margin-bottom:24px;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:2px;">
+      <span style="font-size:22px;font-weight:700;color:var(--text);">5월 31일</span>
+      <span style="font-size:14px;font-weight:500;color:var(--text2);">일요일</span>
+      <span style="font-size:12px;font-weight:600;color:#16a34a;margin-left:auto;padding:2px 10px;border:1.5px solid #16a34a;border-radius:20px;">IN</span>
+    </div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;">간사이공항 → 교토</div>
+    <div style="border-left:3px solid #16a34a;padding-left:12px;border-radius:0;">
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <span class="badge b-green">특급 하루카</span>
+        <span class="badge b-blue">75분 + 3분 + 도보 5분</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:6px;">공항 → 하루카 탑승 → 교토역 하차(75분) → 지하철 가라스마선 시조역(3분) → 도보 약 5분</div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">¥ 3,000~3,500엔 <span style="font-size:11px;font-weight:400;color:var(--text2);">하루카 할인권 / ICOCA 이용 시</span></div>
+      <a class="map-btn" href="https://www.google.com/maps/dir/Kansai+International+Airport/Comfort+Inn+Kyoto+Shijo+Karasuma" target="_blank">🗺 경로 보기</a>
+    </div>
+  </div>
+
+  <div style="height:1px;background:var(--border);margin-bottom:24px;"></div>
+
+  <!-- 6/2 이동 -->
+  <div style="margin-bottom:24px;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:2px;">
+      <span style="font-size:22px;font-weight:700;color:var(--text);">6월 2일</span>
+      <span style="font-size:14px;font-weight:500;color:var(--text2);">화요일</span>
+      <span style="font-size:12px;font-weight:600;color:#2563eb;margin-left:auto;padding:2px 10px;border:1.5px solid #2563eb;border-radius:20px;">이동</span>
+    </div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;">교토 → 오사카 난바</div>
+    <div style="border-left:3px solid #2563eb;padding-left:12px;">
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <span class="badge b-blue">한큐 전철</span>
+        <span class="badge b-teal">한큐 410엔 + 지하철 240엔</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:6px;">한큐 가라스마역(도보) → 오사카우메다 → 미도스지선 → 난바역 30번 출구 → 도보 2~5분</div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">¥ 640~700엔 <span style="font-size:11px;font-weight:400;color:var(--text2);">1인 기준</span></div>
+      <a class="map-btn" href="https://www.google.com/maps/dir/Comfort+Inn+Kyoto+Shijo+Karasuma/1-2-13+Minatomachi+Naniwa-ku+Osaka" target="_blank">🗺 경로 보기</a>
+    </div>
+  </div>
+
+  <div style="height:1px;background:var(--border);margin-bottom:24px;"></div>
+
+  <!-- 6/3 OUT -->
+  <div style="margin-bottom:24px;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:2px;">
+      <span style="font-size:22px;font-weight:700;color:var(--text);">6월 3일</span>
+      <span style="font-size:14px;font-weight:500;color:var(--text2);">수요일</span>
+      <span style="font-size:12px;font-weight:600;color:#d97706;margin-left:auto;padding:2px 10px;border:1.5px solid #d97706;border-radius:20px;">OUT</span>
+    </div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;">오사카 난바 → 간사이공항</div>
+    <div style="border-left:3px solid #d97706;padding-left:12px;">
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <span class="badge b-amber">난카이 라피트</span>
+        <span class="badge b-blue">약 40분</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:6px;">호텔 → 도보 10분 → 난카이 난바역 → 라피트(전좌석 지정) / 공항급행 → 간사이공항</div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">¥ 공항급행 970엔 / 라피트 1,300~1,450엔 <span style="font-size:11px;font-weight:400;color:var(--text2);">1인</span></div>
+      <a class="map-btn" href="https://www.google.com/maps/dir/1-2-13+Minatomachi+Naniwa-ku+Osaka/Kansai+International+Airport" target="_blank">🗺 경로 보기</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- SCHEDULE -->
+<div id="tab-schedule" class="scr">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div class="sec" style="margin:0;">여행 일정</div>
+  </div>
+  <div class="day-tabs">
+    <button class="dt on" onclick="showDay('d0',this)">5/31 (일)</button>
+    <button class="dt" onclick="showDay('d1',this)">6/1 (월)</button>
+    <button class="dt" onclick="showDay('d2',this)">6/2 (화)</button>
+    <button class="dt" onclick="showDay('d3',this)">6/3 (수)</button>
+  </div>
+
+  <div id="d0" class="day-content on">
+    <div class="day-note">교토 도착일 · 숙박: 컴포트 인 교토 시조카라스마</div>
+    <div class="tl-wrap" id="tl-d0">
+      <div class="tl-item"><div class="tl-icon cat-air">✈️</div>
+        <div class="tl-view">
+          <div class="tl-time">09:15 출발 → 11:10 도착</div>
+          <div class="tl-title">인천(ICN) → 간사이(KIX) · ZE611</div>
+          <div class="tl-memo">터미널 1 탑승. 도착 후 입국심사 → 하루카 탑승 준비.</div>
+          <div class="tl-actions"><span class="badge b-green">항공</span><span class="pax-heli">헬리</span><span class="pax-hat">핫은</span><button class="btn-order" onclick="moveItem(this,-1)" title="위로">↑</button><button class="btn-order" onclick="moveItem(this,1)" title="아래로">↓</button><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="09:15 출발 → 11:10 도착"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="인천(ICN) → 간사이(KIX) · ZE611"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">터미널 1 탑승. 도착 후 입국심사 → 하루카 탑승 준비.</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="t">🚃 이동</option><option value="s">👀 관광</option><option value="f">🍜 식사</option><option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+      <div class="tl-item"><div class="tl-icon cat-move">🚃</div>
+        <div class="tl-view">
+          <div class="tl-time">11:10 이후 · 약 90분 소요</div>
+          <div class="tl-title">간사이공항 → 교토 (하루카)</div>
+          <div class="tl-memo">특급 하루카 탑승 → 교토역 → 가라스마선 시조역 → 도보 5분 → 체크인</div>
+          <div class="tl-actions"><span class="badge b-blue">이동</span><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="11:10 이후 · 약 90분 소요"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="간사이공항 → 교토 (하루카)"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">특급 하루카 탑승 → 교토역 → 가라스마선 시조역 → 도보 5분 → 체크인</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="t">🚃 이동</option><option value="s">👀 관광</option><option value="f">🍜 식사</option><option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+      <div class="tl-item"><div class="tl-icon cat-hotel">🏨</div>
+        <div class="tl-view">
+          <div class="tl-time">오후 · 체크인</div>
+          <div class="tl-title">컴포트 인 교토 시조카라스마</div>
+          <div class="tl-memo">짐 정리 후 기온 거리 / 니시키 시장 산책 추천.</div>
+          <div class="tl-actions"><span class="badge b-pink">숙소</span><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="오후 · 체크인"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="컴포트 인 교토 시조카라스마"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">짐 정리 후 기온 거리 / 니시키 시장 산책 추천.</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="h">🏨 숙소</option><option value="t">🚃 이동</option><option value="s">👀 관광</option><option value="f">🍜 식사</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-sm" style="width:100%;margin-top:4px;" onclick="addEventToDay('d0')">+ 일정 추가</button>
+  </div>
+
+  <div id="d1" class="day-content">
+    <div class="day-note">교토 둘째날 · 숙박: 컴포트 인 교토 시조카라스마</div>
+    <div class="tl-wrap" id="tl-d1">
+      <div class="tl-item"><div class="tl-icon cat-sight">👀</div>
+        <div class="tl-view">
+          <div class="tl-time">하루 종일</div>
+          <div class="tl-title">교토 자유 일정</div>
+          <div class="tl-memo">수정 버튼으로 편집하거나 + 추가 버튼으로 일정을 넣어보세요.</div>
+          <div class="tl-actions"><span class="badge b-teal">관광</span><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="하루 종일"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="교토 자유 일정"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">수정 버튼으로 편집하거나 + 추가 버튼으로 일정을 넣어보세요.</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="s">👀 관광</option><option value="t">🚃 이동</option><option value="f">🍜 식사</option><option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-sm" style="width:100%;margin-top:4px;" onclick="addEventToDay('d1')">+ 일정 추가</button>
+  </div>
+
+  <div id="d2" class="day-content">
+    <div class="day-note">교토 → 오사카 이동 · 숙박: APA 난바 에키마에 타워</div>
+    <div class="tl-wrap" id="tl-d2">
+      <div class="tl-item"><div class="tl-icon cat-move">🚃</div>
+        <div class="tl-view">
+          <div class="tl-time">오전 · 체크아웃 후</div>
+          <div class="tl-title">교토 → 오사카 (한큐 전철)</div>
+          <div class="tl-memo">한큐 가라스마역 → 오사카우메다 → 미도스지선 → 난바역 30번 출구 → 도보 2~5분 체크인 (오후 3시~)</div>
+          <div class="tl-actions"><span class="badge b-blue">이동</span><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="오전 · 체크아웃 후"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="교토 → 오사카 (한큐 전철)"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">한큐 가라스마역 → 오사카우메다 → 미도스지선 → 난바역 30번 출구 → 도보 2~5분 체크인 (오후 3시~)</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="t">🚃 이동</option><option value="s">👀 관광</option><option value="f">🍜 식사</option><option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+      <div class="tl-item"><div class="tl-icon cat-sight">👀</div>
+        <div class="tl-view">
+          <div class="tl-time">오후 · 오사카</div>
+          <div class="tl-title">오사카 탐방</div>
+          <div class="tl-memo">도톤보리, 구리코 만, 타코야키 등 자유 일정.</div>
+          <div class="tl-actions"><span class="badge b-teal">관광</span><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="오후 · 오사카"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="오사카 탐방"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">도톤보리, 구리코 만, 타코야키 등 자유 일정.</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="s">👀 관광</option><option value="t">🚃 이동</option><option value="f">🍜 식사</option><option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-sm" style="width:100%;margin-top:4px;" onclick="addEventToDay('d2')">+ 일정 추가</button>
+  </div>
+
+  <div id="d3" class="day-content">
+    <div class="day-note">귀국일 · ZE614 18:00 간사이공항 OUT</div>
+    <div class="tl-wrap" id="tl-d3">
+      <div class="tl-item"><div class="tl-icon cat-move">🚃</div>
+        <div class="tl-view">
+          <div class="tl-time">오전 · 체크아웃</div>
+          <div class="tl-title">APA 난바 → 간사이공항 (난카이 라피트)</div>
+          <div class="tl-memo">체크아웃 후 도보 10분 → 난카이 난바역 → 라피트 or 공항급행(40분) → 탑승 수속</div>
+          <div class="tl-actions"><span class="badge b-blue">이동</span><span class="pax-heli">헬리</span><span class="pax-hat">핫은</span><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="오전 · 체크아웃"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="APA 난바 → 간사이공항 (난카이 라피트)"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">체크아웃 후 도보 10분 → 난카이 난바역 → 라피트 or 공항급행(40분) → 탑승 수속</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="t">🚃 이동</option><option value="s">👀 관광</option><option value="f">🍜 식사</option><option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+      <div class="tl-item"><div class="tl-icon cat-air">✈️</div>
+        <div class="tl-view">
+          <div class="tl-time">18:00 출발 → 19:55 인천 도착</div>
+          <div class="tl-title">간사이(KIX) → 인천(ICN) · ZE614</div>
+          <div class="tl-memo">터미널 1 출발. 19:55 인천 T1 도착.</div>
+          <div class="tl-actions"><span class="badge b-green">항공</span><span class="pax-heli">헬리</span><span class="pax-hat">핫은</span><button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div>
+        </div>
+        <div class="tl-edit-area">
+          <div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" value="18:00 출발 → 19:55 인천 도착"></div>
+          <div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" value="간사이(KIX) → 인천(ICN) · ZE614"></div>
+          <div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo">터미널 1 출발. 19:55 인천 T1 도착.</textarea></div>
+          <div class="row2"><select class="edit-type"><option value="air">✈️ 항공</option><option value="t">🚃 이동</option><option value="s">👀 관광</option><option value="f">🍜 식사</option><option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option></select><div style="display:flex;gap:4px;"><button class="btn-add" style="margin:0;" onclick="saveItem(this)">저장</button><button class="btn-del" onclick="cancelEdit(this)">취소</button></div></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-sm" style="width:100%;margin-top:4px;" onclick="addEventToDay('d3')">+ 일정 추가</button>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div id="tab-tips" class="scr">
+
+  <!-- 교토 섹션 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--accent);">
+    <span style="font-size:20px;">⛩️</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text);">교토</span>
+  </div>
+  <div id="tips-kyoto" style="display:flex;flex-direction:column;gap:8px;margin-bottom:28px;">
+    <div style="font-size:13px;color:var(--text3);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:var(--radius);">아직 추가된 링크가 없어요</div>
+  </div>
+
+  <!-- 오사카 섹션 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #f59e0b;">
+    <span style="font-size:20px;">🏯</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text);">오사카</span>
+  </div>
+  <div id="tips-osaka" style="display:flex;flex-direction:column;gap:8px;margin-bottom:28px;">
+    <a href="https://www.news-wa.com/article/travel/tour-world/2026/01/06/20260106500028" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;background:var(--bg);">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.4;">야노 시호 픽! 오사카 타코야키 진짜 맛집</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">아치치 말고 여기 — 도톤보리 와나카·코가류</div>
+        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:#fef3c7;color:#92400e;">맛집</span>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0;color:var(--text3);"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 0 1-1h4"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+  </div>
+
+  <!-- 쇼핑 섹션 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #a855f7;">
+    <span style="font-size:20px;">🛍️</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text);">쇼핑</span>
+  </div>
+  <div id="tips-shopping" style="display:flex;flex-direction:column;gap:8px;margin-bottom:28px;">
+    <div style="font-size:13px;color:var(--text3);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:var(--radius);">아직 추가된 링크가 없어요</div>
+  </div>
+
+  <!-- 링크 추가 폼 -->
+  <div style="border-top:1px solid var(--border);padding-top:20px;">
+    <div class="sec">+ 링크 추가</div>
+    <div class="form-group">
+      <label class="lbl">제목</label>
+      <input type="text" id="tip-title" placeholder="예: 교토 라멘 맛집 TOP5">
+    </div>
+    <div class="form-group">
+      <label class="lbl">URL</label>
+      <input type="url" id="tip-url" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label class="lbl">한 줄 메모 (선택)</label>
+      <input type="text" id="tip-memo" placeholder="간단한 설명">
+    </div>
+    <div class="row2">
+      <div class="form-group">
+        <label class="lbl">지역</label>
+        <select id="tip-region">
+          <option value="kyoto">교토</option>
+          <option value="osaka">오사카</option>
+          <option value="shopping">쇼핑</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="lbl">카테고리</label>
+        <select id="tip-cat">
+          <option>맛집</option>
+          <option>관광</option>
+          <option>쇼핑</option>
+          <option>교통</option>
+          <option>숙소</option>
+          <option>기타</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addTip()">+ 추가하기</button>
+  </div>
+
+</div>
+
+<!-- TODO -->
+<div id="tab-todo" class="scr">
+
+  <!-- 여행 전 준비 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #3b82f6;">
+    <span style="font-size:20px;">📋</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text);">여행 전 준비</span>
+    <span style="font-size:11px;color:var(--text3);margin-left:auto;" id="todo-pre-count"></span>
+  </div>
+  <div id="todo-pre" style="display:flex;flex-direction:column;gap:6px;margin-bottom:28px;">
+    <!-- 기본 항목들 -->
+  </div>
+
+  <!-- 현지에서 할 일 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #1D9E75;">
+    <span style="font-size:20px;">🗾</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text);">현지에서 할 일</span>
+    <span style="font-size:11px;color:var(--text3);margin-left:auto;" id="todo-local-count"></span>
+  </div>
+  <div id="todo-local" style="display:flex;flex-direction:column;gap:6px;margin-bottom:28px;"></div>
+
+  <!-- 하고싶은 것 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #f59e0b;">
+    <span style="font-size:20px;">✨</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text);">하고싶은 것</span>
+    <span style="font-size:11px;color:var(--text3);margin-left:auto;" id="todo-wish-count"></span>
+  </div>
+  <div id="todo-wish" style="display:flex;flex-direction:column;gap:6px;margin-bottom:28px;"></div>
+
+  <!-- 추가 폼 -->
+  <div style="border-top:1px solid var(--border);padding-top:20px;">
+    <div class="sec">+ 항목 추가</div>
+    <div class="form-group">
+      <label class="lbl">할 일 / 메모</label>
+      <input type="text" id="todo-text" placeholder="예: JR패스 구매, 환전하기...">
+    </div>
+    <div class="form-group">
+      <label class="lbl">링크 (선택)</label>
+      <input type="url" id="todo-url" placeholder="https://... 관련 링크 있으면 첨부">
+    </div>
+    <div class="row2">
+      <div class="form-group">
+        <label class="lbl">카테고리</label>
+        <select id="todo-cat">
+          <option value="pre">여행 전 준비</option>
+          <option value="local">현지에서 할 일</option>
+          <option value="wish">하고싶은 것</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="lbl">우선순위</label>
+        <select id="todo-priority">
+          <option value="high">🔴 높음</option>
+          <option value="mid">🟡 보통</option>
+          <option value="low">🟢 낮음</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addTodo()">+ 추가하기</button>
+  </div>
+
+</div>
+
+<!-- BUDGET -->
+<div id="tab-budget" class="scr">
+
+  <!-- 4탭 세로 구분 -->
+  <div style="display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:16px;">
+    <button id="btab-pre"   onclick="switchBTab('pre')"   style="flex:1;padding:10px 4px;font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;cursor:pointer;line-height:1.4;">사전<br>결제</button>
+    <button id="btab-local" onclick="switchBTab('local')" style="flex:1;padding:10px 4px;font-size:11px;font-weight:500;background:transparent;color:var(--text2);border:none;cursor:pointer;border-left:1px solid var(--border);line-height:1.4;">현지<br>지출</button>
+    <button id="btab-payer" onclick="switchBTab('payer')" style="flex:1;padding:10px 4px;font-size:11px;font-weight:500;background:transparent;color:var(--text2);border:none;cursor:pointer;border-left:1px solid var(--border);line-height:1.4;">결제자<br>정산</button>
+    <button id="btab-log"   onclick="switchBTab('log')"   style="flex:1;padding:10px 4px;font-size:11px;font-weight:500;background:transparent;color:var(--text2);border:none;cursor:pointer;border-left:1px solid var(--border);line-height:1.4;">전체<br>기록</button>
+  </div>
+
+  <!-- ① 사전 결제 -->
+  <div id="bsec-pre">
+    <div class="card">
+      <div class="sec">사전 결제 추가</div>
+      <div class="form-group"><label class="lbl">항목명</label><input type="text" id="pre-name" placeholder="예: 항공권, 호텔, JR패스..."></div>
+      <div class="row2">
+        <div class="form-group"><label class="lbl">금액</label><input type="number" id="pre-amt" placeholder="0" step="100"></div>
+        <div class="form-group"><label class="lbl">통화</label>
+          <select id="pre-curr"><option value="krw">원 (₩)</option><option value="usd">달러 ($)</option><option value="jpy">엔 (¥)</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="form-group"><label class="lbl">결제일</label><input type="text" id="pre-date" placeholder="예: 5/28, 출발 전"></div>
+        <div class="form-group"><label class="lbl">카테고리</label>
+          <select id="pre-cat"><option>항공</option><option>숙박</option><option>교통패스</option><option>보험</option><option>기타</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="form-group"><label class="lbl">결제자</label>
+          <select id="pre-payer"><option value="heli">헬리</option><option value="hat">핫은</option><option value="joint">공동</option></select>
+        </div>
+        <div class="form-group"><label class="lbl">카드명</label><input type="text" id="pre-card" placeholder="예: 현대카드"></div>
+      </div>
+      <button class="btn-add" onclick="addPreExpense()">+ 사전 결제 추가</button>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="sec" style="margin:0;">사전 결제 내역</div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn-sm" onclick="filterPre('all')"  id="pf-all"  style="background:var(--bg2);">전체</button>
+          <button class="btn-sm" onclick="filterPre('heli')" id="pf-heli">헬리</button>
+          <button class="btn-sm" onclick="filterPre('hat')"  id="pf-hat">핫은</button>
+        </div>
+      </div>
+      <div id="pre-list"><div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;">내역 없음</div></div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;padding-top:4px;">
+        <span style="font-size:12px;color:var(--text2);">합계</span>
+        <span style="font-size:14px;font-weight:600;" id="pre-total-disp">-</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 현지 지출 -->
+  <div id="bsec-local" style="display:none;">
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:12px;color:var(--text2);">현지 누적 지출</span>
+        <span style="font-size:14px;font-weight:600;" id="local-spent-disp">-</span>
+      </div>
+      <div class="row2" style="gap:6px;margin-bottom:8px;">
+        <div><label class="lbl">현지 예산 ¥엔</label><input type="number" id="local-budget-jpy" placeholder="예: 50000" step="1000" oninput="calcBudget()"></div>
+        <div><label class="lbl">현지 예산 ₩원</label><input type="number" id="local-budget-krw" placeholder="예: 500000" step="10000" oninput="calcBudget()"></div>
+      </div>
+      <div class="budget-bar"><div class="bfill" id="bfill" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px;">
+        <span id="local-pct">-</span>
+        <span>잔여 <span id="local-remain-disp">-</span></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec">현지 지출 추가</div>
+      <div class="form-group"><label class="lbl">항목명</label><input type="text" id="loc-name" placeholder="예: 라멘, 타코야키, 하루카..."></div>
+      <div class="row2">
+        <div class="form-group"><label class="lbl">금액</label><input type="number" id="loc-amt" placeholder="0" step="10"></div>
+        <div class="form-group"><label class="lbl">통화</label>
+          <select id="loc-curr"><option value="jpy">엔 (¥)</option><option value="krw">원 (₩)</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="form-group"><label class="lbl">날짜</label>
+          <select id="loc-date"><option>5/31 (일)</option><option>6/1 (월)</option><option>6/2 (화)</option><option>6/3 (수)</option></select>
+        </div>
+        <div class="form-group"><label class="lbl">카테고리</label>
+          <select id="loc-cat"><option>교통</option><option>식비</option><option>관광</option><option>쇼핑</option><option>숙박</option><option>기타</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="form-group"><label class="lbl">결제 방법</label>
+          <select id="loc-pay"><option value="cash">현금</option><option value="card">카드</option></select>
+        </div>
+        <div class="form-group"><label class="lbl">카드명 (카드 시)</label><input type="text" id="loc-card" placeholder="예: 현대카드"></div>
+      </div>
+      <div class="row2">
+        <div class="form-group"><label class="lbl">결제자</label>
+          <select id="loc-payer"><option value="heli">헬리</option><option value="hat">핫은</option><option value="joint">공동</option></select>
+        </div>
+        <div class="form-group"><label class="lbl">동행</label>
+          <select id="loc-who"><option value="both">헬리+핫은</option><option value="heli">헬리만</option><option value="hat">핫은만</option></select>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addLocalExpense()">+ 현지 지출 추가</button>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="sec" style="margin:0;">현지 지출 내역</div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn-sm" onclick="filterLocal('all')"  id="lf-all"  style="background:var(--bg2);">전체</button>
+          <button class="btn-sm" onclick="filterLocal('heli')" id="lf-heli">헬리</button>
+          <button class="btn-sm" onclick="filterLocal('hat')"  id="lf-hat">핫은</button>
+          <button class="btn-sm" onclick="filterLocal('cash')" id="lf-cash">현금</button>
+        </div>
+      </div>
+      <div id="local-list"><div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;">현지 지출을 기록해보세요</div></div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;padding-top:4px;">
+        <span style="font-size:12px;color:var(--text2);">합계</span>
+        <span style="font-size:14px;font-weight:600;" id="local-total-disp">-</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 결제자 정산 -->
+  <div id="bsec-payer" style="display:none;">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="pax-heli" style="font-size:13px;padding:4px 12px;">👩‍🦰 헬리</span>
+        <span style="font-size:12px;color:var(--text2);">결제 합계</span>
+        <span style="font-size:16px;font-weight:700;margin-left:auto;" id="sum-heli">-</span>
+      </div>
+      <div id="heli-items" style="margin-bottom:16px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="pax-hat" style="font-size:13px;padding:4px 12px;">👩 핫은</span>
+        <span style="font-size:12px;color:var(--text2);">결제 합계</span>
+        <span style="font-size:16px;font-weight:700;margin-left:auto;" id="sum-hat">-</span>
+      </div>
+      <div id="hat-items" style="margin-bottom:12px;"></div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;">
+        <span style="font-size:12px;color:var(--text2);">정산 메모</span>
+        <span style="font-size:13px;font-weight:600;color:var(--accent);" id="sum-diff">-</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 전체 기록 -->
+  <div id="bsec-log" style="display:none;">
+    <div style="font-size:11px;color:var(--text2);margin-bottom:10px;padding:6px 10px;background:var(--bg2);border-radius:6px;">
+      사전 결제 + 현지 지출 전체 — 날짜 순으로 정렬
+    </div>
+    <div class="card">
+      <div id="log-list"><div style="font-size:13px;color:var(--text3);text-align:center;padding:20px 0;">지출 내역을 추가하면 여기에 기록돼요</div></div>
+    </div>
+  </div>
+
+</div><!-- tab-budget -->
+
+</div><!-- .app -->
+
+<script>
+/* ── 초기 데이터 ── */
+var preExpenses = [
+  {name:'항공권 (ZE611+ZE614 왕복 · 2인)', amt:583600, curr:'krw', cat:'항공', payer:'heli', card:'현대카드', date:'구매완료'},
+  {name:'컴포트 인 교토 시조카라스마 (2박)', amt:128.96, curr:'usd', cat:'숙박', payer:'heli', card:'아고다', date:'5/28 자동결제'},
+  {name:'APA 난바 에키마에 타워 (1박)', amt:11233, curr:'jpy', cat:'숙박', payer:'heli', card:'아고다', date:'5/30 자동결제'}
+];
+var localExpenses = [];
+var preFilt='all', localFilt='all';
+
+/* ── 통화 표시 ── */
+function fmtAmt(amt,curr){
+  if(curr==='jpy') return '¥'+Math.round(amt).toLocaleString();
+  if(curr==='usd') return '$'+Number(amt).toFixed(2);
+  return '₩'+Math.round(amt).toLocaleString();
+}
+function currTag(curr){
+  if(curr==='jpy') return '<span style="font-size:10px;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:4px;font-weight:600;">¥엔</span>';
+  if(curr==='usd') return '<span style="font-size:10px;background:#dbeafe;color:#1e40af;padding:1px 5px;border-radius:4px;font-weight:600;">$달러</span>';
+  return '<span style="font-size:10px;background:#dcfce7;color:#166534;padding:1px 5px;border-radius:4px;font-weight:600;">₩원</span>';
+}
+
+/* ── 탭 전환 ── */
+function showTab(id, btn){
+  try {
+    document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on');});
+    document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
+    var tab = document.getElementById('tab-'+id);
+    if(tab) tab.classList.add('on');
+    var realBtn = btn ? (btn.closest ? btn.closest('.nb')||btn : btn) : null;
+    if(realBtn) realBtn.classList.add('on');
+  } catch(e){ console.warn('showTab error:',e); }
+}
+function showDay(id,btn){
+  document.querySelectorAll('.day-content').forEach(function(d){d.classList.remove('on');});
+  document.querySelectorAll('.dt').forEach(function(b){b.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+function switchBTab(mode){
+  ['pre','local','payer','log'].forEach(function(m){
+    var sec=document.getElementById('bsec-'+m);
+    var btn=document.getElementById('btab-'+m);
+    if(!sec||!btn) return;
+    var on=m===mode;
+    sec.style.display=on?'':'none';
+    btn.style.background=on?'var(--accent)':'transparent';
+    btn.style.color=on?'#fff':'var(--text2)';
+    btn.style.fontWeight=on?'600':'500';
+  });
+  if(mode==='payer') renderPayerDetail();
+  if(mode==='log')   renderLog();
+}
+
+/* ── 일정 편집 ── */
+var typeMap={
+  t:{icon:'🚃',cls:'cat-move',badge:'이동',bcls:'b-blue'},
+  s:{icon:'👀',cls:'cat-sight',badge:'관광',bcls:'b-teal'},
+  f:{icon:'🍜',cls:'cat-food',badge:'식사',bcls:'b-amber'},
+  h:{icon:'🏨',cls:'cat-hotel',badge:'숙소',bcls:'b-pink'},
+  shop:{icon:'🛍',cls:'cat-shop',badge:'쇼핑',bcls:'b-purple'},
+  air:{icon:'✈️',cls:'cat-air',badge:'항공',bcls:'b-green'},
+  '':{icon:'👀',cls:'cat-sight',badge:'관광',bcls:'b-teal'}
+};
+function editItem(btn){btn.closest('.tl-item').classList.add('editing');}
+function cancelEdit(btn){btn.closest('.tl-item').classList.remove('editing');}
+function saveItem(btn){
+  var item=btn.closest('.tl-item');
+  var time=item.querySelector('.edit-time').value;
+  var title=item.querySelector('.edit-title').value;
+  var memo=item.querySelector('.edit-memo').value;
+  var type=item.querySelector('.edit-type').value;
+  var m=typeMap[type]||typeMap[''];
+  item.querySelector('.tl-time').textContent=time;
+  item.querySelector('.tl-title').textContent=title;
+  item.querySelector('.tl-memo').textContent=memo;
+  var icon=item.querySelector('.tl-icon');
+  icon.className='tl-icon '+m.cls; icon.textContent=m.icon;
+  var badge=item.querySelector('.tl-view .badge');
+  badge.textContent=m.badge; badge.className='badge '+m.bcls;
+  item.classList.remove('editing');
+}
+/* ── 드래그앤드롭 (일정 순서 변경) ── */
+var dragSrc = null;
+
+function initDrag(wrap){
+  var items = wrap.querySelectorAll(':scope > .tl-item');
+  items.forEach(function(item){
+    item.setAttribute('draggable','true');
+
+    item.addEventListener('dragstart', function(e){
+      dragSrc = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', function(){
+      item.classList.remove('dragging');
+      wrap.querySelectorAll('.tl-item').forEach(function(i){ i.classList.remove('drag-over'); });
+      dragSrc = null;
+      /* 드래그 후 드래그 재설정 */
+      initDrag(wrap);
+    });
+    item.addEventListener('dragover', function(e){
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if(dragSrc && item !== dragSrc){
+        wrap.querySelectorAll('.tl-item').forEach(function(i){ i.classList.remove('drag-over'); });
+        item.classList.add('drag-over');
+      }
+    });
+    item.addEventListener('drop', function(e){
+      e.preventDefault();
+      if(dragSrc && item !== dragSrc){
+        var items = Array.from(wrap.querySelectorAll(':scope > .tl-item'));
+        var fromIdx = items.indexOf(dragSrc);
+        var toIdx   = items.indexOf(item);
+        if(fromIdx < toIdx) wrap.insertBefore(dragSrc, item.nextSibling);
+        else                wrap.insertBefore(dragSrc, item);
+      }
+      item.classList.remove('drag-over');
+    });
+
+    /* 모바일 터치 지원 */
+    var touchStartY = 0, touchItem = null;
+    item.addEventListener('touchstart', function(e){
+      touchStartY = e.touches[0].clientY;
+      touchItem = item;
+      item.classList.add('dragging');
+    }, {passive:true});
+    item.addEventListener('touchmove', function(e){
+      e.preventDefault();
+      var touch = e.touches[0];
+      var el = document.elementFromPoint(touch.clientX, touch.clientY);
+      var target = el ? el.closest('.tl-item') : null;
+      wrap.querySelectorAll('.tl-item').forEach(function(i){ i.classList.remove('drag-over'); });
+      if(target && target !== item) target.classList.add('drag-over');
+    }, {passive:false});
+    item.addEventListener('touchend', function(e){
+      item.classList.remove('dragging');
+      var touch = e.changedTouches[0];
+      var el = document.elementFromPoint(touch.clientX, touch.clientY);
+      var target = el ? el.closest('.tl-item') : null;
+      if(target && target !== item && target.parentNode === wrap){
+        var items = Array.from(wrap.querySelectorAll(':scope > .tl-item'));
+        var fromIdx = items.indexOf(item);
+        var toIdx   = items.indexOf(target);
+        if(fromIdx < toIdx) wrap.insertBefore(item, target.nextSibling);
+        else                wrap.insertBefore(item, target);
+      }
+      wrap.querySelectorAll('.tl-item').forEach(function(i){ i.classList.remove('drag-over'); });
+    });
+  });
+}
+
+/* 모든 날짜 타임라인에 드래그 초기화 */
+function initAllDrag(){
+  ['d0','d1','d2','d3'].forEach(function(id){
+    var wrap = document.getElementById('tl-'+id);
+    if(wrap) initDrag(wrap);
+  });
+}
+function addEventToDay(dayId){
+  var tl=document.getElementById('tl-'+dayId);
+  var div=document.createElement('div');
+  div.className='tl-item editing';
+  div.innerHTML='<div class="tl-icon cat-sight">👀</div>'+
+    '<div class="tl-view" style="display:none;"><div class="tl-time"></div><div class="tl-title"></div><div class="tl-memo"></div>'+
+    '<div class="tl-actions"><span class="badge b-teal">관광</span>'+
+    
+    
+    '<button class="btn-sm" onclick="editItem(this)">✏ 수정</button></div></div>'+
+    '<div class="tl-edit-area" style="display:block;">'+
+    '<div class="form-group"><label class="lbl">시간</label><input type="text" class="edit-time" placeholder="예: 오전 10:00"></div>'+
+    '<div class="form-group"><label class="lbl">장소 / 제목</label><input type="text" class="edit-title" placeholder="장소 또는 활동명"></div>'+
+    '<div class="form-group"><label class="lbl">메모</label><textarea class="edit-memo" placeholder="여기서 할 일, 팁, 이동방법 등"></textarea></div>'+
+    '<div class="row2"><select class="edit-type">'+
+    '<option value="s">👀 관광</option><option value="t">🚃 이동</option><option value="f">🍜 식사</option>'+
+    '<option value="h">🏨 숙소</option><option value="shop">🛍 쇼핑</option><option value="air">✈️ 항공</option>'+
+    '</select><div style="display:flex;gap:4px;">'+
+    '<button class="btn-add" style="margin:0;" onclick="saveNewItem(this)">저장</button>'+
+    '<button class="btn-del" onclick="this.closest(\'.tl-item\').remove()">삭제</button>'+
+    '</div></div></div>';
+  tl.appendChild(div);
+}
+function saveNewItem(btn){
+  var item=btn.closest('.tl-item');
+  var time=item.querySelector('.edit-time').value||'';
+  var title=item.querySelector('.edit-title').value||'새 일정';
+  var memo=item.querySelector('.edit-memo').value||'';
+  var type=item.querySelector('.edit-type').value;
+  var m=typeMap[type]||typeMap[''];
+  var icon=item.querySelector('.tl-icon');
+  icon.className='tl-icon '+m.cls; icon.textContent=m.icon;
+  var view=item.querySelector('.tl-view');
+  view.querySelector('.tl-time').textContent=time;
+  view.querySelector('.tl-title').textContent=title;
+  view.querySelector('.tl-memo').textContent=memo;
+  var badge=view.querySelector('.badge');
+  badge.textContent=m.badge; badge.className='badge '+m.bcls;
+  view.style.display='';
+  item.querySelector('.tl-edit-area').style.display='none';
+  item.classList.remove('editing');
+  /* 드래그 재초기화 */
+  var wrap = item.parentNode;
+  if(wrap) initDrag(wrap);
+}
+
+/* ── 사전 결제 ── */
+var catColPre={항공:'b-green',숙박:'b-blue',교통패스:'b-amber',보험:'b-purple',기타:'b-teal'};
+function addPreExpense(){
+  var name=document.getElementById('pre-name').value.trim();
+  var amt=parseFloat(document.getElementById('pre-amt').value)||0;
+  var curr=document.getElementById('pre-curr').value;
+  var cat=document.getElementById('pre-cat').value;
+  var payer=document.getElementById('pre-payer').value;
+  var card=document.getElementById('pre-card').value.trim();
+  var date=document.getElementById('pre-date').value.trim();
+  if(!name||!amt) return;
+  preExpenses.push({name:name,amt:amt,curr:curr,cat:cat,payer:payer,card:card,date:date});
+  document.getElementById('pre-name').value='';
+  document.getElementById('pre-amt').value='';
+  document.getElementById('pre-card').value='';
+  document.getElementById('pre-date').value='';
+  calcBudget();
+  saveAll();
+}
+function renderPreList(){
+  var list=document.getElementById('pre-list');
+  if(!list) return;
+  var arr=preFilt==='all'?preExpenses:preExpenses.filter(function(e){return e.payer===preFilt;});
+  if(!arr.length){list.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;">내역 없음</div>';return;}
+  list.innerHTML=arr.map(function(e, idx){
+    var actualIdx = preExpenses.indexOf(e);
+    var pc=e.payer==='heli'?'pay-heli':e.payer==='hat'?'pay-hat':'pay-card';
+    var pl=e.payer==='heli'?'헬리':e.payer==='hat'?'핫은':'공동';
+    return '<div id="pre-exp-'+actualIdx+'">' +
+      '<div class="exp-row pre-view">' +
+        '<div class="exp-left">'+
+          '<div class="exp-name">'+e.name+'</div>'+
+          '<div class="exp-meta">'+
+            '<span class="badge '+(catColPre[e.cat]||'b-teal')+'" style="font-size:10px;padding:1px 6px;">'+e.cat+'</span> '+
+            currTag(e.curr)+
+            (e.date?' <span style="font-size:11px;color:var(--text3);">'+e.date+'</span>':'')+
+            (e.card?' <span style="font-size:11px;color:var(--text3);">'+e.card+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="exp-right">'+
+          '<div class="exp-amt">'+fmtAmt(e.amt,e.curr)+'</div>'+
+          '<div class="exp-chips"><span class="'+pc+'">'+pl+'</span></div>'+
+          '<div style="display:flex;gap:4px;margin-top:4px;justify-content:flex-end;">' +
+            '<button onclick="editPreExp('+actualIdx+')" style="font-size:10px;color:var(--text2);background:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:1px 6px;">✏</button>' +
+            '<button onclick="deletePreExp('+actualIdx+')" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:1px;">✕</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="pre-edit" style="display:none;padding:10px;background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius-sm);margin-top:4px;">' +
+        '<div class="form-group"><label class="lbl">항목명</label><input type="text" class="pe-name" value="'+e.name.replace(/"/g,'&quot;')+'"></div>' +
+        '<div class="row2">' +
+          '<div class="form-group"><label class="lbl">금액</label><input type="number" class="pe-amt" value="'+e.amt+'"></div>' +
+          '<div class="form-group"><label class="lbl">통화</label><select class="pe-curr"><option value="krw" '+(e.curr==='krw'?'selected':'')+'>₩ 원</option><option value="usd" '+(e.curr==='usd'?'selected':'')+'>$ 달러</option><option value="jpy" '+(e.curr==='jpy'?'selected':'')+'>¥ 엔</option></select></div>' +
+        '</div>' +
+        '<div class="row2">' +
+          '<div class="form-group"><label class="lbl">결제일</label><input type="text" class="pe-date" value="'+(e.date||'')+'"></div>' +
+          '<div class="form-group"><label class="lbl">카드명</label><input type="text" class="pe-card" value="'+(e.card||'')+'"></div>' +
+        '</div>' +
+        '<div class="row2">' +
+          '<button onclick="savePreExp('+actualIdx+')" style="padding:8px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">저장</button>' +
+          '<button onclick="cancelPreExp('+actualIdx+')" style="padding:8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">취소</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+function filterPre(mode){
+  preFilt=mode;
+  ['all','heli','hat'].forEach(function(m){var el=document.getElementById('pf-'+m);if(el)el.style.background=m===mode?'var(--bg2)':'';});
+  renderPreList();
+}
+
+/* ── 현지 지출 ── */
+var catColLoc={교통:'b-green',식비:'b-amber',관광:'b-teal',쇼핑:'b-pink',숙박:'b-blue',기타:'b-blue'};
+var whoLabel={both:'헬리+핫은',heli:'헬리만',hat:'핫은만',joint:'공동'};
+function addLocalExpense(){
+  var name=document.getElementById('loc-name').value.trim();
+  var amt=parseFloat(document.getElementById('loc-amt').value)||0;
+  var curr=document.getElementById('loc-curr').value;
+  var cat=document.getElementById('loc-cat').value;
+  var date=document.getElementById('loc-date').value;
+  var pay=document.getElementById('loc-pay').value;
+  var card=document.getElementById('loc-card').value.trim();
+  var payer=document.getElementById('loc-payer').value;
+  var who=document.getElementById('loc-who').value;
+  if(!name||!amt) return;
+  localExpenses.push({name:name,amt:amt,curr:curr,cat:cat,date:date,pay:pay,card:card,payer:payer,who:who});
+  document.getElementById('loc-name').value='';
+  document.getElementById('loc-amt').value='';
+  document.getElementById('loc-card').value='';
+  calcBudget();
+  saveAll();
+}
+function renderLocalList(){
+  var list=document.getElementById('local-list');
+  if(!list) return;
+  var arr=localFilt==='all'?localExpenses
+    :localFilt==='cash'?localExpenses.filter(function(e){return e.pay==='cash';})
+    :localExpenses.filter(function(e){return e.payer===localFilt;});
+  if(!arr.length){list.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;">현지 지출을 기록해보세요</div>';return;}
+  list.innerHTML=arr.map(function(e){
+    var actualIdx = localExpenses.indexOf(e);
+    var pc=e.payer==='heli'?'pay-heli':e.payer==='hat'?'pay-hat':'pay-card';
+    var pl=e.payer==='heli'?'헬리':e.payer==='hat'?'핫은':'공동';
+    var payLabel=e.pay==='cash'?'현금':(e.card||'카드');
+    var payClass=e.pay==='cash'?'pay-cash':'pay-card';
+    return '<div id="loc-exp-'+actualIdx+'">' +
+      '<div class="exp-row loc-view">' +
+        '<div class="exp-left">'+
+          '<div class="exp-name">'+e.name+'</div>'+
+          '<div class="exp-meta">'+
+            '<span class="badge '+(catColLoc[e.cat]||'b-teal')+'" style="font-size:10px;padding:1px 6px;">'+e.cat+'</span> '+
+            '<span style="font-size:11px;color:var(--text2);">'+e.date+'</span> '+
+            currTag(e.curr)+' '+
+            '<span style="font-size:11px;color:var(--text3);">'+whoLabel[e.who]+'</span>'+
+          '</div>'+
+        '</div>'+
+        '<div class="exp-right">'+
+          '<div class="exp-amt">'+fmtAmt(e.amt,e.curr)+'</div>'+
+          '<div class="exp-chips"><span class="'+payClass+'">'+payLabel+'</span><span class="'+pc+'">'+pl+'</span></div>'+
+          '<div style="display:flex;gap:4px;margin-top:4px;justify-content:flex-end;">' +
+            '<button onclick="editLocExp('+actualIdx+')" style="font-size:10px;color:var(--text2);background:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:1px 6px;">✏</button>' +
+            '<button onclick="deleteLocExp('+actualIdx+')" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:1px;">✕</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="loc-edit" style="display:none;padding:10px;background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius-sm);margin-top:4px;">' +
+        '<div class="form-group"><label class="lbl">항목명</label><input type="text" class="le-name" value="'+e.name.replace(/"/g,'&quot;')+'"></div>' +
+        '<div class="row2">' +
+          '<div class="form-group"><label class="lbl">금액</label><input type="number" class="le-amt" value="'+e.amt+'"></div>' +
+          '<div class="form-group"><label class="lbl">통화</label><select class="le-curr"><option value="jpy" '+(e.curr==='jpy'?'selected':'')+'>¥ 엔</option><option value="krw" '+(e.curr==='krw'?'selected':'')+'>₩ 원</option></select></div>' +
+        '</div>' +
+        '<div class="row2">' +
+          '<div class="form-group"><label class="lbl">날짜</label><select class="le-date"><option '+(e.date==='5/31 (일)'?'selected':'')+'>5/31 (일)</option><option '+(e.date==='6/1 (월)'?'selected':'')+'>6/1 (월)</option><option '+(e.date==='6/2 (화)'?'selected':'')+'>6/2 (화)</option><option '+(e.date==='6/3 (수)'?'selected':'')+'>6/3 (수)</option></select></div>' +
+          '<div class="form-group"><label class="lbl">결제</label><select class="le-pay"><option value="cash" '+(e.pay==='cash'?'selected':'')+'>현금</option><option value="card" '+(e.pay==='card'?'selected':'')+'>카드</option></select></div>' +
+        '</div>' +
+        '<div class="row2">' +
+          '<button onclick="saveLocExp('+actualIdx+')" style="padding:8px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">저장</button>' +
+          '<button onclick="cancelLocExp('+actualIdx+')" style="padding:8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">취소</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+function filterLocal(mode){
+  localFilt=mode;
+  ['all','heli','hat','cash'].forEach(function(m){var el=document.getElementById('lf-'+m);if(el)el.style.background=m===mode?'var(--bg2)':'';});
+  renderLocalList();
+}
+
+/* ── 결제자별 상세 ── */
+function renderPayerDetail(){
+  var all=preExpenses.map(function(e){return Object.assign({},e,{_type:'pre'});})
+    .concat(localExpenses.map(function(e){return Object.assign({},e,{_type:'local'});}));
+  function makeItems(arr,elId){
+    var el=document.getElementById(elId);
+    if(!el) return;
+    if(!arr.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:4px 0 12px;">결제 내역 없음</div>';return;}
+    el.innerHTML=arr.map(function(e){
+      var payInfo=e._type==='pre'?(e.card||'카드'):(e.pay==='cash'?'현금':(e.card||'카드'));
+      return '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:0.5px solid var(--border);">'+
+        '<div>'+
+          '<div style="font-size:12px;font-weight:500;color:var(--text);">'+e.name+'</div>'+
+          '<div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(e.date?e.date+' · ':'')+payInfo+'</div>'+
+        '</div>'+
+        '<div style="font-size:13px;font-weight:600;margin-left:12px;white-space:nowrap;">'+fmtAmt(e.amt,e.curr)+'</div>'+
+      '</div>';
+    }).join('');
+  }
+  /* 통화별 합계 */
+  function sumByCurr(arr){
+    var s={krw:0,usd:0,jpy:0};
+    arr.forEach(function(e){ s[e.curr]=(s[e.curr]||0)+e.amt; });
+    var parts=[];
+    if(s.krw) parts.push('₩'+Math.round(s.krw).toLocaleString());
+    if(s.usd) parts.push('$'+s.usd.toFixed(2));
+    if(s.jpy) parts.push('¥'+Math.round(s.jpy).toLocaleString());
+    return parts.join(' + ')||'0';
+  }
+  var heliArr=all.filter(function(e){return e.payer==='heli';});
+  var hatArr =all.filter(function(e){return e.payer==='hat';});
+  setText('sum-heli', sumByCurr(heliArr));
+  setText('sum-hat',  sumByCurr(hatArr));
+  setText('sum-diff', '통화가 섞여있어 직접 정산 필요');
+  makeItems(heliArr,'heli-items');
+  makeItems(hatArr, 'hat-items');
+}
+
+/* ── 전체 기록 (날짜순) ── */
+function renderLog(){
+  var list=document.getElementById('log-list');
+  if(!list) return;
+  var dateOrder={'구매완료':0,'5/28 자동결제':1,'5/29':1,'5/30 자동결제':2,'5/31 (일)':3,'6/1 (월)':4,'6/2 (화)':5,'6/3 (수)':6};
+  var all=preExpenses.map(function(e){return Object.assign({},e,{_type:'pre'});})
+    .concat(localExpenses.map(function(e){return Object.assign({},e,{_type:'local'});}));
+  all.sort(function(a,b){
+    var ao=dateOrder[a.date]!==undefined?dateOrder[a.date]:99;
+    var bo=dateOrder[b.date]!==undefined?dateOrder[b.date]:99;
+    return ao-bo;
+  });
+  if(!all.length){list.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:20px 0;">지출 내역을 추가하면 여기에 기록돼요</div>';return;}
+  var lastDate='__';
+  list.innerHTML=all.map(function(e){
+    var pc=e.payer==='heli'?'pay-heli':e.payer==='hat'?'pay-hat':'pay-card';
+    var pl=e.payer==='heli'?'헬리':e.payer==='hat'?'핫은':'공동';
+    var payLabel=e._type==='pre'?(e.card||'카드'):(e.pay==='cash'?'현금':(e.card||'카드'));
+    var payClass=e._type==='pre'?'pay-card':(e.pay==='cash'?'pay-cash':'pay-card');
+    var typeBadge=e._type==='pre'
+      ?'<span style="font-size:10px;background:#dcfce7;color:#166534;padding:1px 6px;border-radius:4px;">사전</span>'
+      :'<span style="font-size:10px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;">현지</span>';
+    var d=e.date||'-';
+    var head='';
+    if(d!==lastDate){
+      lastDate=d;
+      head='<div style="font-size:11px;font-weight:600;color:var(--text2);padding:10px 0 4px;'+(head===''?'':'border-top:1px solid var(--border);margin-top:4px;')+'">'+d+'</div>';
+    }
+    return head+'<div class="exp-row">'+
+      '<div class="exp-left">'+
+        '<div class="exp-name">'+e.name+'</div>'+
+        '<div class="exp-meta">'+typeBadge+' '+currTag(e.curr)+'</div>'+
+      '</div>'+
+      '<div class="exp-right">'+
+        '<div class="exp-amt">'+fmtAmt(e.amt,e.curr)+'</div>'+
+        '<div class="exp-chips"><span class="'+payClass+'">'+payLabel+'</span><span class="'+pc+'">'+pl+'</span></div>'+
+      '</div></div>';
+  }).join('');
+}
+
+/* ── 사전결제 수정/삭제 ── */
+function editPreExp(i){
+  var el=document.getElementById('pre-exp-'+i); if(!el) return;
+  el.querySelector('.pre-view').style.display='none';
+  el.querySelector('.pre-edit').style.display='block';
+}
+function cancelPreExp(i){
+  var el=document.getElementById('pre-exp-'+i); if(!el) return;
+  el.querySelector('.pre-view').style.display='flex';
+  el.querySelector('.pre-edit').style.display='none';
+}
+function savePreExp(i){
+  var el=document.getElementById('pre-exp-'+i); if(!el) return;
+  preExpenses[i].name = el.querySelector('.pe-name').value.trim()||preExpenses[i].name;
+  preExpenses[i].amt  = parseFloat(el.querySelector('.pe-amt').value)||preExpenses[i].amt;
+  preExpenses[i].curr = el.querySelector('.pe-curr').value;
+  preExpenses[i].date = el.querySelector('.pe-date').value.trim();
+  preExpenses[i].card = el.querySelector('.pe-card').value.trim();
+  calcBudget();
+  saveAll();
+}
+function deletePreExp(i){
+  preExpenses.splice(i,1);
+  calcBudget();
+  saveAll();
+}
+
+/* ── 현지지출 수정/삭제 ── */
+function editLocExp(i){
+  var el=document.getElementById('loc-exp-'+i); if(!el) return;
+  el.querySelector('.loc-view').style.display='none';
+  el.querySelector('.loc-edit').style.display='block';
+}
+function cancelLocExp(i){
+  var el=document.getElementById('loc-exp-'+i); if(!el) return;
+  el.querySelector('.loc-view').style.display='flex';
+  el.querySelector('.loc-edit').style.display='none';
+}
+function saveLocExp(i){
+  var el=document.getElementById('loc-exp-'+i); if(!el) return;
+  localExpenses[i].name = el.querySelector('.le-name').value.trim()||localExpenses[i].name;
+  localExpenses[i].amt  = parseFloat(el.querySelector('.le-amt').value)||localExpenses[i].amt;
+  localExpenses[i].curr = el.querySelector('.le-curr').value;
+  localExpenses[i].date = el.querySelector('.le-date').value;
+  localExpenses[i].pay  = el.querySelector('.le-pay').value;
+  calcBudget();
+  saveAll();
+}
+function deleteLocExp(i){
+  localExpenses.splice(i,1);
+  calcBudget();
+  saveAll();
+}
+
+/* ── 꿀팁 링크 ── */
+var tipCatColor = {
+  맛집:'background:#fef3c7;color:#92400e;',
+  관광:'background:#ccfbf1;color:#115e59;',
+  쇼핑:'background:#fce7f3;color:#9d174d;',
+  교통:'background:#dcfce7;color:#166534;',
+  숙소:'background:#dbeafe;color:#1e40af;',
+  기타:'background:#f3f4f6;color:#374151;'
+};
+var tips = {
+  kyoto: [],
+  osaka: [
+    {title:'야노 시호 픽! 오사카 타코야키 진짜 맛집', memo:'아치치 말고 여기 — 도톤보리 와나카·코가류', url:'https://www.news-wa.com/article/travel/tour-world/2026/01/06/20260106500028', cat:'맛집'}
+  ],
+  shopping: []
+};
+
+function renderTips(){
+  ['kyoto','osaka','shopping'].forEach(function(region){
+    var list = document.getElementById('tips-'+region);
+    if(!list) return;
+    var arr = tips[region];
+    if(!arr.length){
+      list.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:20px 0;border:1px dashed var(--border);border-radius:var(--radius);">아직 추가된 링크가 없어요</div>';
+      return;
+    }
+    list.innerHTML = arr.map(function(t,i){
+      var cs = tipCatColor[t.cat]||tipCatColor['기타'];
+      return '<div id="tip-item-'+region+'-'+i+'">' +
+        /* 보기 */
+        '<div class="tip-view" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);">' +
+          '<a href="'+t.url+'" target="_blank" rel="noopener" style="flex:1;min-width:0;text-decoration:none;">' +
+            '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.4;">'+t.title+'</div>' +
+            (t.memo?'<div style="font-size:11px;color:var(--text2);margin-bottom:6px;">'+t.memo+'</div>':'') +
+            '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;'+cs+'">'+t.cat+'</span>' +
+          '</a>' +
+          '<div style="display:flex;gap:5px;flex-shrink:0;">' +
+            '<button onclick="editTip(\''+region+'\','+i+')" style="font-size:11px;color:var(--text2);background:none;border:1px solid var(--border);border-radius:5px;cursor:pointer;padding:2px 7px;">✏</button>' +
+            '<button onclick="deleteTip(\''+region+'\','+i+')" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;">✕</button>' +
+          '</div>' +
+        '</div>' +
+        /* 수정 */
+        '<div class="tip-edit" style="display:none;padding:12px 14px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--bg2);">' +
+          '<div class="form-group"><label class="lbl">제목</label><input type="text" class="et-title" value="'+t.title.replace(/"/g,'&quot;')+'"></div>' +
+          '<div class="form-group"><label class="lbl">URL</label><input type="url" class="et-url" value="'+t.url+'"></div>' +
+          '<div class="form-group"><label class="lbl">메모</label><input type="text" class="et-memo" value="'+(t.memo||'').replace(/"/g,'&quot;')+'"></div>' +
+          '<div class="row2">' +
+            '<div class="form-group"><label class="lbl">카테고리</label>' +
+              '<select class="et-cat">' +
+                ['맛집','관광','쇼핑','교통','숙소','기타'].map(function(c){return '<option '+(t.cat===c?'selected':'')+'>'+c+'</option>';}).join('') +
+              '</select>' +
+            '</div>' +
+            '<div style="display:flex;gap:5px;align-items:flex-end;padding-bottom:10px;">' +
+              '<button onclick="saveTip(\''+region+'\','+i+')" style="flex:1;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">저장</button>' +
+              '<button onclick="cancelEditTip(\''+region+'\','+i+')" style="flex:1;padding:8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">취소</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  });
+}
+
+function editTip(region,i){ var el=document.getElementById('tip-item-'+region+'-'+i); if(!el)return; el.querySelector('.tip-view').style.display='none'; el.querySelector('.tip-edit').style.display='block'; }
+function cancelEditTip(region,i){ var el=document.getElementById('tip-item-'+region+'-'+i); if(!el)return; el.querySelector('.tip-view').style.display='flex'; el.querySelector('.tip-edit').style.display='none'; }
+function saveTip(region,i){
+  var el=document.getElementById('tip-item-'+region+'-'+i); if(!el)return;
+  tips[region][i].title = el.querySelector('.et-title').value.trim();
+  tips[region][i].url   = el.querySelector('.et-url').value.trim();
+  tips[region][i].memo  = el.querySelector('.et-memo').value.trim();
+  tips[region][i].cat   = el.querySelector('.et-cat').value;
+  renderTips();
+  saveAll();
+}
+function deleteTip(region,i){ tips[region].splice(i,1); renderTips(); }
+
+function addTip(){
+  var title  = document.getElementById('tip-title').value.trim();
+  var url    = document.getElementById('tip-url').value.trim();
+  var memo   = document.getElementById('tip-memo').value.trim();
+  var region = document.getElementById('tip-region').value;
+  var cat    = document.getElementById('tip-cat').value;
+  if(!title || !url) return;
+  tips[region].push({title:title, url:url, memo:memo, cat:cat});
+  document.getElementById('tip-title').value = '';
+  document.getElementById('tip-url').value   = '';
+  document.getElementById('tip-memo').value  = '';
+  renderTips();
+  saveAll();
+}
+
+renderTips();
+saveAll();
+
+/* ── 투두리스트 ── */
+var todos = {
+  pre: [
+    {text:'JR패스 구매', url:'', priority:'high', done:false},
+    {text:'여행자보험 가입', url:'', priority:'high', done:false},
+    {text:'엔화 환전', url:'', priority:'high', done:false},
+    {text:'포켓와이파이 / 유심 준비', url:'', priority:'mid', done:false},
+    {text:'항공권 예약', url:'', priority:'high', done:true},
+    {text:'교토 호텔 예약', url:'', priority:'high', done:true},
+    {text:'오사카 호텔 예약', url:'', priority:'high', done:true},
+  ],
+  local: [],
+  wish: []
+};
+
+var priorityColor = {high:'#ef4444', mid:'#f59e0b', low:'#22c55e'};
+var priorityDot   = {high:'🔴', mid:'🟡', low:'🟢'};
+
+function renderTodos(){
+  ['pre','local','wish'].forEach(function(cat){
+    var list = document.getElementById('todo-'+cat);
+    var count = document.getElementById('todo-'+cat+'-count');
+    if(!list) return;
+    var arr = todos[cat];
+    var done = arr.filter(function(t){return t.done;}).length;
+    if(count) count.textContent = done+'/'+arr.length;
+
+    if(!arr.length){
+      list.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;border:1px dashed var(--border);border-radius:var(--radius);">항목을 추가해보세요</div>';
+      return;
+    }
+    list.innerHTML = arr.map(function(t,i){
+      var doneStyle = t.done ? 'text-decoration:line-through;color:var(--text3);' : '';
+      var urlBtn = t.url ? '<a href="'+t.url+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--accent);text-decoration:none;margin-top:4px;">🔗 링크 보기</a>' : '';
+      return '<div id="todo-item-'+cat+'-'+i+'">' +
+        /* 보기 모드 */
+        '<div class="todo-view" style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);">' +
+          '<input type="checkbox" '+(t.done?'checked':'')+' onchange="toggleTodo(\''+cat+'\','+i+',this)" style="margin-top:2px;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;">' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:13px;font-weight:500;'+doneStyle+'">'+priorityDot[t.priority]+' '+t.text+'</div>' +
+            urlBtn +
+          '</div>' +
+          '<div style="display:flex;gap:5px;flex-shrink:0;">' +
+            '<button onclick="editTodo(\''+cat+'\','+i+')" style="font-size:11px;color:var(--text2);background:none;border:1px solid var(--border);border-radius:5px;cursor:pointer;padding:2px 7px;">✏</button>' +
+            '<button onclick="deleteTodo(\''+cat+'\','+i+')" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;">✕</button>' +
+          '</div>' +
+        '</div>' +
+        /* 수정 모드 (기본 숨김) */
+        '<div class="todo-edit" style="display:none;padding:10px 12px;border:1px solid var(--accent);border-radius:var(--radius-sm);background:var(--bg2);">' +
+          '<div class="form-group"><label class="lbl">할 일</label><input type="text" class="edit-todo-text" value="'+t.text.replace(/"/g,'&quot;')+'" style="width:100%;"></div>' +
+          '<div class="form-group"><label class="lbl">링크</label><input type="url" class="edit-todo-url" value="'+(t.url||'')+'" placeholder="https://" style="width:100%;"></div>' +
+          '<div class="row2">' +
+            '<div class="form-group"><label class="lbl">우선순위</label>' +
+              '<select class="edit-todo-priority">' +
+                '<option value="high" '+(t.priority==='high'?'selected':'')+'>🔴 높음</option>' +
+                '<option value="mid"  '+(t.priority==='mid' ?'selected':'')+'>🟡 보통</option>' +
+                '<option value="low"  '+(t.priority==='low' ?'selected':'')+'>🟢 낮음</option>' +
+              '</select>' +
+            '</div>' +
+            '<div style="display:flex;gap:5px;align-items:flex-end;padding-bottom:10px;">' +
+              '<button onclick="saveTodo(\''+cat+'\','+i+')" style="flex:1;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">저장</button>' +
+              '<button onclick="cancelEditTodo(\''+cat+'\','+i+')" style="flex:1;padding:8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">취소</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  });
+}
+
+function toggleTodo(cat, idx, cb){
+  todos[cat][idx].done = cb.checked;
+  renderTodos();
+  saveAll();
+}
+function deleteTodo(cat, idx){
+  todos[cat].splice(idx, 1);
+  renderTodos();
+  saveAll();
+}
+function editTodo(cat, idx){
+  var el = document.getElementById('todo-item-'+cat+'-'+idx);
+  if(!el) return;
+  el.querySelector('.todo-view').style.display = 'none';
+  el.querySelector('.todo-edit').style.display = 'block';
+}
+function cancelEditTodo(cat, idx){
+  var el = document.getElementById('todo-item-'+cat+'-'+idx);
+  if(!el) return;
+  el.querySelector('.todo-view').style.display = 'flex';
+  el.querySelector('.todo-edit').style.display = 'none';
+}
+function saveTodo(cat, idx){
+  var el = document.getElementById('todo-item-'+cat+'-'+idx);
+  if(!el) return;
+  var text = el.querySelector('.edit-todo-text').value.trim();
+  var url  = el.querySelector('.edit-todo-url').value.trim();
+  var pri  = el.querySelector('.edit-todo-priority').value;
+  if(!text) return;
+  todos[cat][idx].text     = text;
+  todos[cat][idx].url      = url;
+  todos[cat][idx].priority = pri;
+  renderTodos();
+  saveAll();
+}
+function addTodo(){
+  var text = document.getElementById('todo-text').value.trim();
+  var url  = document.getElementById('todo-url').value.trim();
+  var cat  = document.getElementById('todo-cat').value;
+  var pri  = document.getElementById('todo-priority').value;
+  if(!text) return;
+  todos[cat].unshift({text:text, url:url, priority:pri, done:false});
+  document.getElementById('todo-text').value = '';
+  document.getElementById('todo-url').value  = '';
+  renderTodos();
+  saveAll();
+}
+
+/* init */
+loadAll().then(function(){
+  renderTodos();
+  renderTips();
+  try { calcBudget(); } catch(e){ console.warn('calcBudget error:',e); }
+  initAllDrag();
+});
+saveAll();
+
+/* ── Supabase 연동 ── */
+var SUPABASE_URL = 'https://iidaxrpceqjrzcfamaxc.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpZGF4cnBjZXFqcnpjZmFtYXhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MTQ1MzYsImV4cCI6MjA5NDM5MDUzNn0.e6YobyHlTXvBh80AadDQGZ5YNkEGRJoRB5FGGW2DasQ';
+
+function sbFetch(table, method, body){
+  return fetch(SUPABASE_URL+'/rest/v1/'+table, {
+    method: method||'GET',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer '+SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method==='POST' ? 'resolution=merge-duplicates' : ''
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+
+async function saveAll(){
+  try {
+    await sbFetch('pre_expenses?id=eq.1',   'DELETE');
+    await sbFetch('local_expenses?id=eq.1', 'DELETE');
+    await sbFetch('tips?id=eq.1',           'DELETE');
+    await sbFetch('todos?id=eq.1',          'DELETE');
+    await sbFetch('pre_expenses',   'POST', {id:1, data: preExpenses});
+    await sbFetch('local_expenses', 'POST', {id:1, data: localExpenses});
+    await sbFetch('tips',           'POST', {id:1, data: tips});
+    await sbFetch('todos',          'POST', {id:1, data: todos});
+  } catch(e){ console.warn('Supabase 저장 실패:', e); }
+}
+
+async function loadAll(){
+  try {
+    var r1 = await sbFetch('pre_expenses?id=eq.1');
+    var r2 = await sbFetch('local_expenses?id=eq.1');
+    var r3 = await sbFetch('tips?id=eq.1');
+    var r4 = await sbFetch('todos?id=eq.1');
+    var d1 = await r1.json();
+    var d2 = await r2.json();
+    var d3 = await r3.json();
+    var d4 = await r4.json();
+    if(d1[0]) preExpenses   = d1[0].data;
+    if(d2[0]) localExpenses = d2[0].data;
+    if(d3[0]) tips          = d3[0].data;
+    if(d4[0]) todos         = d4[0].data;
+  } catch(e){ console.warn('Supabase 불러오기 실패:', e); }
+}
+
+/* ── 전체 계산 ── */
+function safe(id){ return document.getElementById(id); }
+function setText(id,val){ var el=safe(id); if(el) el.textContent=val; }
+
+function calcBudget(){
+  /* 사전결제 통화별 합계 */
+  var pKrw=0,pUsd=0,pJpy=0;
+  preExpenses.forEach(function(e){
+    if(e.curr==='krw') pKrw+=e.amt;
+    else if(e.curr==='usd') pUsd+=e.amt;
+    else if(e.curr==='jpy') pJpy+=e.amt;
+  });
+  var preParts=[];
+  if(pKrw) preParts.push('₩'+Math.round(pKrw).toLocaleString());
+  if(pUsd) preParts.push('$'+pUsd.toFixed(2));
+  if(pJpy) preParts.push('¥'+Math.round(pJpy).toLocaleString());
+  setText('pre-total-disp', preParts.join(' + ')||'-');
+
+  /* 현지지출 통화별 합계 */
+  var lJpy=0,lKrw=0;
+  localExpenses.forEach(function(e){
+    if(e.curr==='jpy') lJpy+=e.amt; else lKrw+=e.amt;
+  });
+  var locParts=[];
+  if(lJpy) locParts.push('¥'+Math.round(lJpy).toLocaleString());
+  if(lKrw) locParts.push('₩'+Math.round(lKrw).toLocaleString());
+  var locDisp=locParts.join(' + ')||'0';
+  setText('local-spent-disp', locDisp);
+  setText('local-total-disp', locDisp);
+
+  /* 현지 예산 진행바 */
+  var jEl=safe('local-budget-jpy'), kEl=safe('local-budget-krw');
+  var budJpy=jEl?parseInt(jEl.value)||0:0;
+  var budKrw=kEl?parseInt(kEl.value)||0:0;
+  var pct=0, remainStr='-';
+  if(budJpy>0&&lJpy>0){
+    pct=Math.min(100,Math.round(lJpy/budJpy*100));
+    remainStr='¥'+(budJpy-Math.round(lJpy)).toLocaleString();
+  } else if(budKrw>0&&lKrw>0){
+    pct=Math.min(100,Math.round(lKrw/budKrw*100));
+    remainStr='₩'+(budKrw-Math.round(lKrw)).toLocaleString();
+  }
+  setText('local-pct', (budJpy||budKrw)?pct+'%':'-');
+  setText('local-remain-disp', remainStr);
+  var fill=safe('bfill');
+  if(fill){ fill.style.width=pct+'%'; fill.className='bfill'+(pct>=100?' over':''); }
+
+  /* 개요 탭 카드 업데이트 */
+  var catColor = {
+    항공:'background:#dcfce7;color:#166534;',
+    숙박:'background:#dbeafe;color:#1e40af;',
+    교통패스:'background:#fef3c7;color:#92400e;',
+    보험:'background:#ede9fe;color:#4c1d95;',
+    기타:'background:#f3f4f6;color:#374151;',
+    교통:'background:#dcfce7;color:#166534;',
+    식비:'background:#fef3c7;color:#92400e;',
+    관광:'background:#ccfbf1;color:#115e59;',
+    쇼핑:'background:#fce7f3;color:#9d174d;'
+  };
+  var currSymbol = {krw:'₩', usd:'$', jpy:'¥'};
+  var currLabel  = {krw:'KRW', usd:'USD', jpy:'YEN'};
+
+  function makeBadge(text, style){
+    return '<span style="font-size:9px;font-weight:600;padding:2px 5px;border-radius:6px;white-space:nowrap;'+style+'">'+text+'</span>';
+  }
+  function makeCurrBadge(text){
+    return '<span style="font-size:9px;font-weight:600;color:var(--text2);width:28px;display:inline-block;text-align:left;flex-shrink:0;">'+text+'</span>';
+  }
+  function makeCatBadge(text, style){
+    return '<span style="font-size:9px;font-weight:600;padding:2px 5px;border-radius:6px;white-space:nowrap;width:32px;display:inline-block;text-align:center;flex-shrink:0;'+style+'">'+text+'</span>';
+  }
+
+  var preLines = document.getElementById('ov-pre-lines');
+  if(preLines){
+    var pRows = preExpenses.map(function(e, i){
+      var isLast = i === preExpenses.length - 1;
+      var border = isLast ? '' : 'border-bottom:0.5px solid var(--border);';
+      var catBadge = makeCatBadge(e.cat, catColor[e.cat]||'background:#f3f4f6;color:#374151;');
+      var currBadge = makeCurrBadge(currLabel[e.curr]);
+      var amt = e.curr==='usd' ? e.amt.toFixed(2) : Math.round(e.amt).toLocaleString();
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;'+border+'min-width:0;">'+
+        '<div style="display:flex;gap:3px;align-items:center;flex-shrink:0;">'+currBadge+catBadge+'</div>'+
+        '<span style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;margin-left:4px;">'+currSymbol[e.curr]+amt+'</span>'+
+      '</div>';
+    });
+    preLines.innerHTML = pRows.length ? pRows.join('') : '<div style="font-size:12px;color:var(--text3);text-align:center;padding:8px 0;">-</div>';
+  }
+
+  var localLines = document.getElementById('ov-local-lines');
+  var localSub   = document.getElementById('ov-local-sub');
+  if(localLines){
+    if(!localExpenses.length){
+      localLines.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:8px 0;">-</div>';
+    } else {
+      var lRows = localExpenses.map(function(e, i){
+        var isLast = i === localExpenses.length - 1;
+        var border = isLast ? '' : 'border-bottom:0.5px solid var(--border);';
+        var catBadge = makeCatBadge(e.cat, catColor[e.cat]||'background:#f3f4f6;color:#374151;');
+        var currBadge = makeCurrBadge(currLabel[e.curr]);
+        var amt = e.curr==='usd' ? e.amt.toFixed(2) : Math.round(e.amt).toLocaleString();
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;'+border+'min-width:0;">'+
+          '<div style="display:flex;gap:3px;align-items:center;flex-shrink:0;">'+currBadge+catBadge+'</div>'+
+          '<span style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;margin-left:4px;">'+currSymbol[e.curr]+amt+'</span>'+
+        '</div>';
+      });
+      localLines.innerHTML = lRows.join('');
+    }
+  }
+  if(localSub){
+    if(remainStr !== '-') localSub.textContent = '잔여 ' + remainStr;
+    else localSub.textContent = (budJpy||budKrw) ? '잔여 -' : '예산 미설정';
+  }
+
+  renderPreList();
+  renderLocalList();
+  var payerSec=safe('bsec-payer'); if(payerSec&&payerSec.style.display!=='none') renderPayerDetail();
+  var logSec=safe('bsec-log'); if(logSec&&logSec.style.display!=='none') renderLog();
+}
+
+/* init done above */
+</script>
+</body>
+</html>
